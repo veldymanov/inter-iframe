@@ -179,7 +179,7 @@ var iframeChat = {
 		/*******************************************
 		* Add touch listeners to iframe chat object
 		********************************************/
-		touchListener.touchCheck(frameContainer);	
+//		touchListener.touchCheck(frameContainer);	
 			
 		this.counter++;
 	},
