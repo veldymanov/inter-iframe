@@ -1,3 +1,57 @@
+/************************************
+* Mouse Listener object
+*************************************/
+var mouseListener = {
+	
+	deleteFrame: function(/*js-deleteFrame*/elem){
+		elem.on('mousedown', function(e){
+			e.preventDefault();	
+			iframeChat.deleteFrame( $(this) );
+		});			
+	},
+	
+	focusToInput: function(/*js-iframe-container*/elem){
+		elem.on('click', function(){
+			$(this).children(".js-iframe").contents().find("#js-msg").focus(); 
+		});
+				
+	},
+	
+	dragDrop: function(/*js-iframe-container*/elem){	
+		//iframe Drag'n'Drop
+		elem.on('mousedown', function(e){
+			var elem = this;
+			var deltaX0 = parseInt($(elem).css('left'), 10) - e.pageX; 
+			var deltaY0= parseInt($(elem).css('top'), 10) - e.pageY;
+
+			$(".js-iframe-container").children(".js-iframe").css( "zIndex", -2 );
+			$(".js-iframe-container").children(".js-deleteFrame").css( "zIndex", -2 );
+			// over the rest
+			$(elem).children(".js-iframe").css( "zIndex", -1 ); 
+			$(elem).children(".js-deleteFrame").css( "zIndex", -1 ); 
+
+			function moveAt(e) {
+				$(elem).css({
+					'left': e.pageX + deltaX0 + 'px',
+					'top': e.pageY + deltaY0 + 'px'
+				});			
+			}
+
+			document.onmousemove = function(e) {
+				e.preventDefault();
+				moveAt(e);
+			};
+
+			elem.onmouseup = function() {
+				e.preventDefault();
+				document.onmousemove = null;
+				elem.onmouseup = null;	
+			};
+		});	
+	}	
+};
+
+
 /*--------------------------------------------------
 *	Iframe chat object
 --------------------------------------------------*/
@@ -34,60 +88,20 @@ var iframeChat = {
 			"</body>" +
 			"</html>";
 			
-		/************************************
-		* Delete iframe-container listener
-		*************************************/
-		deleteFrame.on('mousedown', function(e){
-			e.preventDefault();	
-			iframeChat.deleteFrame( $(this) );
-		});	
+		/*******************************************
+		* Add mouse listeners to iframe chat object
+		********************************************/
+		//delete iframe
+		mouseListener.deleteFrame(deleteFrame);
+		//focus on input field
+		mouseListener.focusToInput(frameContainer);
+		//mouse drag'n'drop listener
+		mouseListener.dragDrop(frameContainer);
 		
-		/************************************
-		* Set focus on input field listener
-		*************************************/
-		frameContainer.on('click', function(){
-			$(this).children(".js-iframe").contents().find("#js-msg").focus(); 
-		});
-		
-		/************************************
-		* iframe Drag'n'Drop event listeners
-		*************************************/	
-		//Cancell default behaviour
-		frameContainer.on("dragstart", function(e){
-			e.preventDefault();
-		});
-		
-		//iframe Drag'n'Drop
-		frameContainer.on('mousedown', function(e){
-			var elem = this;
-			var deltaX0 = parseInt($(elem).css('left'), 10) - e.pageX; 
-			var deltaY0= parseInt($(elem).css('top'), 10) - e.pageY;
-
-			$(".js-iframe-container").children(".js-iframe").css( "zIndex", -2 );
-			$(".js-iframe-container").children(".js-deleteFrame").css( "zIndex", -2 );
-			// over the rest
-			$(elem).children(".js-iframe").css( "zIndex", -1 ); 
-			$(elem).children(".js-deleteFrame").css( "zIndex", -1 ); 
-
-			function moveAt(e) {
-				$(elem).css({
-					'left': e.pageX + deltaX0 + 'px',
-					'top': e.pageY + deltaY0 + 'px'
-				});			
-			}
-
-			document.onmousemove = function(e) {
-				e.preventDefault();
-				moveAt(e);
-			};
-
-			elem.onmouseup = function() {
-				e.preventDefault();
-				document.onmousemove = null;
-				elem.onmouseup = null;	
-			};
-		});
-	
+		/*******************************************
+		* Add touch listeners to iframe chat object
+		********************************************/
+			
 			
 		this.counter++;
 	},
