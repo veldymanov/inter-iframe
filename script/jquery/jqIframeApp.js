@@ -1,3 +1,42 @@
+/****************************************
+* Touch stop scroll propagation object
+*****************************************/
+var touchScroll = {
+	log: function(msg) {
+//		var p = document.getElementById('log');
+//		p.innerHTML = p.innerHTML + "<br>" + msg;
+	},
+	
+	touchCheck: function(/*jQuery*/ elem) {		
+		try {		
+			document.createEvent('TouchEvent');
+			//  We are on a device that supports touch		
+			this.stopScrollPropagation(elem);
+		} catch (e) {
+			//  Then we aren't on a device that supports touch
+		} finally {					
+
+		}
+	},
+			
+	stopScrollPropagation: function(/*jQuery*/ elem){		
+		elem.each(function() {		
+			this.addEventListener('touchstart', function(e) {
+				$(parent.document).find(".js-body").css('overflow','hidden');
+			}, false);
+				
+			this.addEventListener('touchmove', function(e) {
+
+			}, false);		
+				
+			this.addEventListener('touchend', function(e) {		
+				$(parent.document).find(".js-body").css('overflow','auto');
+			}, false);	
+		});		
+		
+	}
+};
+
 jQuery(document).ready(function(){
 	//Define targetOrigin
 	var domain = "*"; //"http://localhost:3000";
@@ -55,4 +94,11 @@ jQuery(document).ready(function(){
 	window.addEventListener('click', function () {
 		$("#js-msg").focus();	
 	});
+	
+	/************************************
+	* Touch stop scroll propagation
+	* to avoid document moving during 
+	* touch scrolling
+	*************************************/
+	touchScroll.touchCheck($(window));
 });

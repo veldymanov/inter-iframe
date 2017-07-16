@@ -10,14 +10,18 @@ var mouseListener = {
 		});			
 	},
 	
-	focusToInput: function(/*$('.js-iframe-container')*/elem){
-		elem.on('click', function(){
-			$(this).children(".js-iframe").contents().find("#js-msg").focus(); 
-		});
-				
+	touchCheck: function(/*$('.js-iframe-container')*/ elem) {	
+		try {
+			document.createEvent('TouchEvent');
+			//  We are on a device that supports touch			
+		} catch (e) {
+			//  Then we aren't on a device that supports touch
+			this.dragDrop(elem)
+		} 
 	},
 	
-	dragDrop: function(/*$('.js-iframe-container')*/elem){	
+	dragDrop: function(/*$('.js-iframe-container')*/elem){
+		
 		//iframe Drag'n'Drop
 		elem.on('mousedown', function(e){
 			var elem = this;
@@ -58,16 +62,14 @@ var mouseListener = {
 *****************************************/
 var touchListener = {
 	log: function(msg) {
-		var p = document.getElementById('log');
-		p.innerHTML = p.innerHTML + "<br>" + msg;
+//		var p = document.getElementById('log');
+//		p.innerHTML = p.innerHTML + "<br>" + msg;
 	},
 	
-	touchCheck: function(/*.js-iframe-container*/ elem) {	
-		
-		
-		
+	touchCheck: function(/*$(.js-iframe-container)*/ elem) {		
 		try {
 			document.createEvent('TouchEvent');
+			//  We are on a device that supports touch			
 			this.makeTouchable(elem);
 		} catch (e) {
 			//  Then we aren't on a device that supports touch
@@ -76,8 +78,8 @@ var touchListener = {
 		}
 	},
 		
-	makeTouchable: function(/*js*/ elem) {
-		$(elem).each(function() {
+	makeTouchable: function(/*jQuery*/ elem) {
+		elem.each(function() {
 			this.addEventListener('touchstart', function(e) {
 				touchListener.touchStart($(this), e);
 			}, false);
@@ -92,20 +94,17 @@ var touchListener = {
 		});
 	},		
 
-	touchStart: function(/*JQuery*/ elem, /*event*/ e) {
-	
+	touchStart: function(/*JQuery*/ elem, /*event*/ e) {	
 		this.startX = e.targetTouches[0].clientX;
 		this.startY = e.targetTouches[0].clientY;
 		this.startRight =  isNaN(parseInt(elem.css('left'), 10)) ? 0 : parseInt(elem.css('left'), 10);
-		this.startTop =  isNaN(parseInt(elem.css('top'), 10)) ? 0 : parseInt(elem.css('top'), 10);		
-		
-		touchListener.log("this.startTop: " + this.startTop);
+		this.startTop =  isNaN(parseInt(elem.css('top'), 10)) ? 0 : parseInt(elem.css('top'), 10);	
 
 		$(".js-iframe-container").children(".js-iframe").css( "zIndex", -2 );
 		$(".js-iframe-container").children(".js-deleteFrame").css( "zIndex", -2 );
 		// over the rest
 		elem.children(".js-iframe").css( "zIndex", -1 ); 
-		elem.children(".js-deleteFrame").css( "zIndex", -1 ); 
+		elem.children(".js-deleteFrame").css( "zIndex", -1 ); 	
 	},
 		
 	touchMove: function(/*JQuery*/ elem, /*event*/ e) {
@@ -114,20 +113,15 @@ var touchListener = {
 		var deltaX = e.targetTouches[0].clientX - this.startX;
 		var deltaY = e.targetTouches[0].clientY - this.startY;
 		
-//		touchListener.log("deltaX: " + deltaX);
-			
 		elem.css({
 			'left': this.startRight + deltaX + 'px',
 			'top': this.startTop + deltaY + 'px',				
 		});	
-
 	},	
 		
 	touchEnd: function(/*JQuery*/ elem, /*event*/ e) {
-		this.startX = null;
-		this.startY = null;
+		
 	}
-
 };
 
 /****************************************
@@ -154,7 +148,7 @@ var iframeChat = {
 				"<link rel='stylesheet' href='style/normalize.css' />" +
 				"<link href='style/iframe.css' rel='stylesheet' type='text/css'/>" +
 			"</head>" +
-			"<body>" +
+			"<body id='js-body'>" +
 				"<ul class='comments'  id='js-comments'></ul>" +
 				"<form id='js-form' class='form'>" +
 					"<label for='js-msg' id='js-lbl_msg' class='label'>[iFrame" + this.counter + "]:</label>" +
@@ -171,16 +165,16 @@ var iframeChat = {
 		********************************************/
 		//delete iframe
 		mouseListener.deleteFrame(deleteFrame);
-		//focus on input field
-		mouseListener.focusToInput(frameContainer);
 		//mouse drag'n'drop listener
-		mouseListener.dragDrop(frameContainer);
+		mouseListener.touchCheck(frameContainer);
 		
 		/*******************************************
 		* Add touch listeners to iframe chat object
 		********************************************/
+		//touch drag'n'drop listener
 		touchListener.touchCheck(frameContainer);	
-			
+		
+		
 		this.counter++;
 	},
 		

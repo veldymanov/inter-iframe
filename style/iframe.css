@@ -4,7 +4,7 @@
 *{box-sizing: border-box;}
 
 body {
-	background: rgb(207, 226, 243);
+	background: rgba(207, 226, 243, 1);
 	font-size: 0.85em;
 	margin: 0;
 	padding: 17px 2% 2% 2%;	
