@@ -73,7 +73,7 @@ jQuery(document).ready(function(){
 //			return;
 		}
 		
-		//Separete frame name from message
+		//Separate frame name from message
 		var index = e.data.indexOf(':');
 		var frameName = e.data.slice(0, index);
 		var msg = e.data.slice(index + 1);
